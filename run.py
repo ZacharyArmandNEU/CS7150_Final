@@ -88,13 +88,22 @@ if __name__ == '__main__':
                                                                            'you can select [partial_start_index, min(enc_in + partial_start_index, N)]')
 
     args = parser.parse_args()
-    args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
+    args.use_gpu = True if (torch.cuda.is_available() or torch.backends.mps.is_available()) and args.use_gpu else False
 
-    if args.use_gpu and args.use_multi_gpu:
-        args.devices = args.devices.replace(' ', '')
-        device_ids = args.devices.split(',')
-        args.device_ids = [int(id_) for id_ in device_ids]
-        args.gpu = args.device_ids[0]
+    if args.use_gpu:
+        if torch.cuda.is_available():
+            if args.use_multi_gpu:
+                args.devices = args.devices.replace(' ', '')
+                device_ids = args.devices.split(',')
+                args.device_ids = [int(id_) for id_ in device_ids]
+                args.gpu = args.device_ids[0]
+            else:
+                # Use only one GPU specified by --gpu
+                args.device_ids = [args.gpu]  # Use the single GPU specified by the user
+        elif torch.backends.mps.is_available():
+            # no multi-GPU with mps (at least not on my device!)
+            args.gpu = 'mps'
+            args.device_ids = 'mps'
 
     print('Args in experiment:')
     print(args)
