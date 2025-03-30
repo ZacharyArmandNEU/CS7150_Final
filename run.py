@@ -5,6 +5,14 @@ from experiments.exp_long_term_forecasting_partial import Exp_Long_Term_Forecast
 import random
 import numpy as np
 
+import sys
+# Print the path of the active virtual environment
+#print(f"Virtual Environment Path: {sys.prefix}")
+#print("cuda.is_available:", torch.cuda.is_available())
+#"mps" if torch.backends.mps.is_available()
+print("MPS!", torch.backends.mps.is_available())
+
+
 if __name__ == '__main__':
     fix_seed = 2023
     random.seed(fix_seed)
@@ -86,9 +94,9 @@ if __name__ == '__main__':
     parser.add_argument('--use_norm', type=int, default=True, help='use norm and denorm')
     parser.add_argument('--partial_start_index', type=int, default=0, help='the start index of variates for partial training, '
                                                                            'you can select [partial_start_index, min(enc_in + partial_start_index, N)]')
-    # Positional embeddings for iTransformer
-    parser.add_argument('--use_positional_embedding', type=bool, default=False, help='whether to add positional embeddings to iTransformer')
 
+    # positional embedding support
+    parser.add_argument('--use_positional_embedding', type=bool, default=False, help='whether to use positional embedding on iTransformer)')
 
     args = parser.parse_args()
     args.use_gpu = True if (torch.cuda.is_available() or torch.backends.mps.is_available()) and args.use_gpu else False
@@ -107,6 +115,16 @@ if __name__ == '__main__':
             # no multi-GPU with mps (at least not on my device!)
             args.gpu = 'mps'
             args.device_ids = 'mps'
+
+    print(args.gpu, args.device_ids)
+
+    '''
+    if args.use_gpu and args.use_multi_gpu:
+        args.devices = args.devices.replace(' ', '')
+        device_ids = args.devices.split(',')
+        args.device_ids = [int(id_) for id_ in device_ids]
+        args.gpu = args.device_ids[0]
+    '''
 
     print('Args in experiment:')
     print(args)
@@ -150,7 +168,8 @@ if __name__ == '__main__':
                 print('>>>>>>>predicting : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
                 exp.predict(setting, True)
 
-            torch.cuda.empty_cache()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
     else:
         ii = 0
         setting = '{}_{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}'.format(
@@ -175,4 +194,5 @@ if __name__ == '__main__':
         exp = Exp(args)  # set experiments
         print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
         exp.test(setting, test=1)
-        torch.cuda.empty_cache()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()

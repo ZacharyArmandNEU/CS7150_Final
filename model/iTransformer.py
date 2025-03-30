@@ -18,13 +18,14 @@ class Model(nn.Module):
         self.pred_len = configs.pred_len
         self.output_attention = configs.output_attention
         self.use_norm = configs.use_norm
-        # Embedding
+        # Embedding -- adding support for positional embedding
         if configs.use_positional_embedding:
             self.enc_embedding = DataEmbedding_inverted_PE(configs.seq_len, configs.d_model, configs.embed, configs.freq,
                                                         configs.dropout)
-        else:   
+        else: 
             self.enc_embedding = DataEmbedding_inverted(configs.seq_len, configs.d_model, configs.embed, configs.freq,
                                                         configs.dropout)
+
         self.class_strategy = configs.class_strategy
         # Encoder-only architecture
         self.encoder = Encoder(
