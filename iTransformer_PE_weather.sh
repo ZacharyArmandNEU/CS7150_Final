@@ -25,7 +25,7 @@ pyenv exec python -u run.py \
   --itr 1 \
   --use_gpu True \
   --num_workers 0 \
-  --train_epochs 5 \
+  --train_epochs 10 \
   --use_positional_embedding True
 
 
@@ -49,5 +49,5 @@ pyenv exec python -u run.py \
   --itr 1 \
   --use_gpu True \
   --num_workers 0 \
-  --train_epochs 5 \
+  --train_epochs 10 \
   --use_positional_embedding False

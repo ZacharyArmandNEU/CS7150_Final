@@ -8,10 +8,6 @@ import numpy as np
 import sys
 # Print the path of the active virtual environment
 #print(f"Virtual Environment Path: {sys.prefix}")
-#print("cuda.is_available:", torch.cuda.is_available())
-#"mps" if torch.backends.mps.is_available()
-print("MPS!", torch.backends.mps.is_available())
-
 
 if __name__ == '__main__':
     fix_seed = 2023
@@ -115,8 +111,6 @@ if __name__ == '__main__':
             # no multi-GPU with mps (at least not on my device!)
             args.gpu = 'mps'
             args.device_ids = 'mps'
-
-    print(args.gpu, args.device_ids)
 
     '''
     if args.use_gpu and args.use_multi_gpu:
